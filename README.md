@@ -16,37 +16,56 @@ This project aims to build a basic load balancer that distributes HTTP requests 
 ## Getting Started
 
 - **Setup Virtual Environment:**
-   ```bash
-   virtualenv venv
-   source venv/bin/activate
-   ```
-   
-- **Install Dependencies:**
   ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  ```
+- **Install Dependencies:**
+
+  ```bash
+  python -m pip install --upgrade pip
   pip install -r requirements.txt
   ```
 
   - **Run Backend Servers:**
+
   ```bash
   python app.py
   ```
 
+  ```bash
+  python app.py --port 5001
+  ```
+
+  ```bash
+  python app.py --port 5002
+  ```
+
   - **Run Load Balancer:**
+
   ```bash
   python load_balancer.py
   ```
 
   - **Test Load Balancer:**
+
   ```bash
    curl http://127.0.0.1:8000
   ```
 
 ### Testing
+
 Unit Tests: Includes unit tests for load balancer functionality.
 Load Tests: Use tools like Apache Benchmark (ab) to test load balancer performance under different scenarios.
 
+```bash
+python test/round_robin.py
+```
+
 ### Contributing
+
 Feel free to contribute by opening issues, suggesting improvements, or submitting pull requests. Your feedback is valuable!
 
 ### License
+
 This project is licensed under the MIT License.
