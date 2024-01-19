@@ -1,3 +1,5 @@
+# editor: https://editor.swagger.io
+
 openapi: 3.0.3
 info:
   title: Load Balancer API
@@ -37,7 +39,7 @@ paths:
                 healthy_servers:
                   ["http://127.0.0.1:5000", "http://127.0.0.1:5002"]
                 unhealthy_servers: ["http://127.0.0.1:5001"]
-  /add-server:
+  
     post:
       summary: Add a Server
       description: Adds a new server to the list of backend servers.

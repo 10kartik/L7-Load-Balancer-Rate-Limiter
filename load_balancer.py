@@ -1,9 +1,9 @@
-from flask import Flask, redirect
+from flask import Flask, redirect, request
 from itertools import cycle
 from threading import Lock, Thread
 import requests
 import time
-from flask import request
+from helper import sanitize_urls
 
 app = Flask(__name__)
 
@@ -52,38 +52,48 @@ def load_balancer():
         next_server = next((s for s in server_cycle if s in healthy_servers), None)
     return redirect(next_server)
 
-# Add an endpoint to get the list of servers, health and unhealthy
+# An endpoint to get the list of servers, health and unhealthy
 @app.route('/servers')
 def get_servers():
     global backend_servers
     global healthy_servers
     return {'servers': backend_servers,'healthy_servers': healthy_servers, 'unhealthy_servers': list(set(backend_servers) - set(healthy_servers))}
 
-# Add an post endpoint to add a new server to the list of backend servers
-@app.route('/add-server', methods=['POST'])
+# An post endpoint that accepts list of urls, validates and sanitizes it using helper function then adds a new servers to the list of backend servers
+@app.route('/servers', methods=['POST'])
 def add_server():
     global backend_servers
-    new_server = request.get_json()['server']
-    with lock:
-        if new_server not in backend_servers:
-            backend_servers.append(new_server)
-            return {'message': 'Server added'}
-        else:
-            return {'message': 'Server already exists'}, 400
 
-# Add an post endpoint to remove a server from the list of backend servers
+    try:
+        # Get array of servers from the request body
+        servers = request.get_json().get('servers', [])
+        # Validate and sanitize the URLs using the helper function
+        sanitized_servers = sanitize_urls(servers)
+        with lock:
+                backend_servers_set = set(backend_servers)
+                backend_servers_set.update(sanitized_servers)
+                backend_servers = list(backend_servers_set)
+        return {'message': 'Server added successfully'}
+    except ValueError as e:
+        return {'message': str(e)}, 400
+
+
+# An delete endpoint to remove a server from the list of backend servers
 @app.route('/remove-server', methods=['POST'])
 def remove_server():
     global backend_servers
-    server_to_remove = request.get_json()['server']
-    with lock:
-        if server_to_remove in backend_servers:
-            backend_servers.remove(server_to_remove)
-            if server_to_remove in healthy_servers:
-                healthy_servers.remove(server_to_remove)
-            return {'message': 'Server removed'}
-        else:
-            return {'message': 'Server not found'}, 400
+    try:
+        servers_to_remove = request.get_json().get('servers', [])
+        servers_to_remove = sanitize_urls(servers_to_remove)
+        with lock:
+            for server_to_remove in servers_to_remove:
+                if server_to_remove in backend_servers:
+                    backend_servers.remove(server_to_remove)
+                    if server_to_remove in healthy_servers:
+                        healthy_servers.remove(server_to_remove)
+            return {'message': 'Servers removed'}, 200
+    except ValueError as e:
+        return {'message': str(e)}, 400
 
 if __name__ == '__main__':
     print('Running load balancer on port 8000')
