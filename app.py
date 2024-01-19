@@ -7,6 +7,11 @@ app = Flask(__name__)
 def index():
     return 'Redirected to Flask App running on port {}'.format(request.environ['SERVER_PORT'])
 
+# add health check route which returns 200 code and OK message
+@app.route('/health')
+def health():
+    return 'OK', 200
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Run the Flask app with a specified port.')
     parser.add_argument('--port', type=int, default=5000, help='Port number to run the app on.')
