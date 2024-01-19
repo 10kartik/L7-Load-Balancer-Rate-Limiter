@@ -1,4 +1,4 @@
-# Unit test for round robin load balancing, run this test, three app.py servers on ports 5000, 5001, 5002
+# Unit test for round robin load balancing, run this test, three server.py servers on ports 5000, 5001, 5002
 # and load_balancer.py on port 8000
 # Make sure all the servers are running before running this test
 

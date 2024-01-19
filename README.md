@@ -30,15 +30,15 @@ This project aims to build a basic load balancer that distributes HTTP requests 
   - **Run Backend Servers:**
 
   ```bash
-  python app.py
+  python server.py
   ```
 
   ```bash
-  python app.py --port 5001
+  python server.py --port 5001
   ```
 
   ```bash
-  python app.py --port 5002
+  python server.py --port 5002
   ```
 
   - **Run Load Balancer:**
