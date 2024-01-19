@@ -1,0 +1,89 @@
+openapi: 3.0.3
+info:
+  title: Load Balancer API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Load Balance Request
+      description: Redirects the request to the next healthy server.
+      responses:
+        "200":
+          description: Successful redirection
+          content:
+            application/json:
+              example: {}
+        "503":
+          description: No healthy servers available
+          content:
+            text/plain:
+              example: "No healthy servers available"
+  /servers:
+    get:
+      summary: Get List of Servers
+      description: Retrieves the list of all servers, healthy servers, and unhealthy servers.
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              example:
+                servers:
+                  [
+                    "http://127.0.0.1:5000",
+                    "http://127.0.0.1:5001",
+                    "http://127.0.0.1:5002",
+                  ]
+                healthy_servers:
+                  ["http://127.0.0.1:5000", "http://127.0.0.1:5002"]
+                unhealthy_servers: ["http://127.0.0.1:5001"]
+  /add-server:
+    post:
+      summary: Add a Server
+      description: Adds a new server to the list of backend servers.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                server:
+                  type: string
+              required:
+                - server
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              example: { "message": "Server added" }
+        "400":
+          description: Server already exists
+          content:
+            application/json:
+              example: { "message": "Server already exists" }
+  /remove-server:
+    post:
+      summary: Remove a Server
+      description: Removes a server from the list of backend servers.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                server:
+                  type: string
+              required:
+                - server
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              example: { "message": "Server removed" }
+        "404":
+          description: Server not found
+          content:
+            application/json:
+              example: { "message": "Server not found" }
