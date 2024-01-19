@@ -56,9 +56,9 @@ This project aims to build a basic load balancer that distributes HTTP requests 
 ### Testing
 
 Unit Tests: Includes unit tests for load balancer functionality.
-Load Tests: Use tools like Apache Benchmark (ab) to test load balancer performance under different scenarios.
 
 ```bash
+# test round robin load balancing, Make sure to run all 3 backend servers first
 python test/round_robin.py
 ```
 

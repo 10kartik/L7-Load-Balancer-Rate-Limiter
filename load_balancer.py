@@ -3,6 +3,7 @@ from itertools import cycle
 from threading import Lock, Thread
 import requests
 import time
+from flask import request
 
 app = Flask(__name__)
 
@@ -50,6 +51,39 @@ def load_balancer():
             return "No healthy servers available", 503
         next_server = next((s for s in server_cycle if s in healthy_servers), None)
     return redirect(next_server)
+
+# Add an endpoint to get the list of servers, health and unhealthy
+@app.route('/servers')
+def get_servers():
+    global backend_servers
+    global healthy_servers
+    return {'servers': backend_servers,'healthy_servers': healthy_servers, 'unhealthy_servers': list(set(backend_servers) - set(healthy_servers))}
+
+# Add an post endpoint to add a new server to the list of backend servers
+@app.route('/add-server', methods=['POST'])
+def add_server():
+    global backend_servers
+    new_server = request.get_json()['server']
+    with lock:
+        if new_server not in backend_servers:
+            backend_servers.append(new_server)
+            return {'message': 'Server added'}
+        else:
+            return {'message': 'Server already exists'}, 400
+
+# Add an post endpoint to remove a server from the list of backend servers
+@app.route('/remove-server', methods=['POST'])
+def remove_server():
+    global backend_servers
+    server_to_remove = request.get_json()['server']
+    with lock:
+        if server_to_remove in backend_servers:
+            backend_servers.remove(server_to_remove)
+            if server_to_remove in healthy_servers:
+                healthy_servers.remove(server_to_remove)
+            return {'message': 'Server removed'}
+        else:
+            return {'message': 'Server not found'}, 400
 
 if __name__ == '__main__':
     print('Running load balancer on port 8000')
