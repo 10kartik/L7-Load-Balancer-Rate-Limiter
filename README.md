@@ -1,6 +1,6 @@
-# L7 Load Balancer
+# L7 Load Balancer Rate Limiter
 
-A simple Layer 7 (Application Layer) load balancer implemented in Python using the Flask framework and multithreading.
+A simple Layer 7 (Application Layer) load balancer implemented in Python using the Flask framework and multithreading. It also includes an IP-based rate limiting feature implemented using Redis.
 
 ## Project Overview
 
@@ -10,10 +10,14 @@ This project aims to build a basic load balancer that distributes HTTP requests 
 
 - **Round Robin Load Balancing:** Distributes incoming requests among multiple backend servers in a round-robin fashion.
 - **Multithreading:** Utilizes Python's multithreading capabilities to handle concurrent connections efficiently.
+- **IP-Based Rate Limiting:** To prevent abuse and ensure fair usage, the load balancer implements IP-based rate limiting. Each client IP address is allowed a certain number of requests per time period. If a client exceeds this limit, their requests are temporarily blocked until the next time period. This feature is implemented using Redis, a fast, in-memory data store.
 - **Health Checks:** Periodically checks the health of backend servers using HTTP GET requests. Unhealthy servers are temporarily removed from the list.
 - **Dynamic Server Management:** Allows adding or subtracting servers dynamically based on demand.
 
 ## Getting Started
+
+- **Setup Redis:**
+  The IP-based rate limiting feature requires a running Redis server. If you don't have Redis installed, you can download it from the [official website](https://redis.io/download). Once you have Redis installed, you can start the server with the default configuration by running `redis-server` in your terminal.
 
 - **Setup Virtual Environment:**
   ```bash
@@ -68,4 +72,4 @@ Feel free to contribute by opening issues, suggesting improvements, or submittin
 
 ### License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
