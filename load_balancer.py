@@ -4,6 +4,7 @@ from threading import Lock, Thread
 import requests
 import time
 from helper import sanitize_urls
+from rate_limiter.index import RateLimiter
 
 app = Flask(__name__)
 
@@ -43,9 +44,15 @@ def health_check():
 # Start the health check thread as a daemon
 health_check_thread = Thread(target=health_check, daemon=True)
 health_check_thread.start()
+rate_limiter_service = RateLimiter()
 
 @app.route('/')
 def load_balancer():
+    ip_address = request.remote_addr
+
+    if not rate_limiter_service.check_rate_limit(ip_address):
+        return "Rate limit exceeded", 429
+
     with lock:
         if not healthy_servers:
             return "No healthy servers available", 503
